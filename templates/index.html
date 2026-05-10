@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor Dinâmico de Moedas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: rgba(30, 41, 59, 0.7);
+            --surface-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --glass-blur: blur(16px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--surface-color);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--surface-border);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--surface-border);
+            background: rgba(15, 23, 42, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--surface-border);
+            background: rgba(30, 41, 59, 0.4);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* Content Area */
+        .content {
+            padding: 2rem;
+            min-height: 400px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Forms & Inputs */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--surface-border);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Results & Cards */
+        .result-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--success);
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .change-list {
+            list-style: none;
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .change-item {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .change-qty {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        .badge {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Toggle Switch */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--surface-border);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-muted);
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+            background-color: white;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--surface-border);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.success { border-left: 4px solid var(--success); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Conversor de Moedas</h1>
+        <button class="btn btn-outline" id="btn-update-api" onclick="updateRatesFromAPI()">
+            <svg style="width:16px;height:16px;margin-right:8px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+            Atualizar Cotações (API)
+        </button>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('tab-converter')">Converter</button>
+        <button class="tab-btn" onclick="openTab('tab-currencies')">Moedas</button>
+        <button class="tab-btn" onclick="openTab('tab-stock')">Estoque</button>
+    </div>
+
+    <div class="content">
+        <!-- TAB CONVERTER -->
+        <div id="tab-converter" class="tab-content active">
+            <form id="form-convert" onsubmit="handleConvert(event)">
+                <div class="form-group">
+                    <label>Valor Original</label>
+                    <input type="number" id="conv-amount" step="0.01" min="0.01" required placeholder="Ex: 150.50">
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>De (Origem)</label>
+                        <select id="conv-from" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Para (Destino)</label>
+                        <select id="conv-to" required></select>
+                    </div>
+                </div>
+                <div class="switch-container">
+                    <label class="switch">
+                        <input type="checkbox" id="conv-stock">
+                        <span class="slider"></span>
+                    </label>
+                    <span style="font-size:0.9rem; color:var(--text-muted);">Limitar pelo Estoque Físico Disponível</span>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Converter Valor</button>
+            </form>
+
+            <div id="conv-result" class="result-card" style="display:none;">
+                <div style="text-align:center; color:var(--text-muted);">Valor Convertido</div>
+                <div class="result-amount" id="res-amount"></div>
+                <div style="text-align:center; margin-bottom: 1rem;" id="res-items-count"></div>
+                
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-muted);">Decomposição (Algoritmo Guloso)</h4>
+                <ul class="change-list" id="res-change-list"></ul>
+
+                <button id="btn-confirm-stock" class="btn btn-outline" style="width:100%; margin-top:1.5rem; display:none;" onclick="confirmStockDeduction()">
+                    Confirmar Retirada do Estoque
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB MOEDAS -->
+        <div id="tab-currencies" class="tab-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2>Moedas Cadastradas</h2>
+            </div>
+            <div style="overflow-x:auto;">
+                <table id="table-currencies">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nome</th>
+                            <th>Símbolo</th>
+                            <th>Cotação em BRL</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB ESTOQUE -->
+        <div id="tab-stock" class="tab-content">
+            <h2>Controle de Estoque</h2>
+            <p style="color:var(--text-muted); margin-bottom:1.5rem; font-size:0.9rem;">Gerencie a quantidade física disponível para cada denominação (cédulas/moedas).</p>
+            
+            <div class="form-group" style="max-width:300px;">
+                <label>Selecione a Moeda</label>
+                <select id="stock-currency-select" onchange="loadStock()"></select>
+            </div>
+
+            <div id="stock-container" style="display:none;">
+                <table id="table-stock">
+                    <thead>
+                        <tr>
+                            <th>Denominação</th>
+                            <th>Quantidade Físca</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="saveStock()">Salvar Estoque</button>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    let currentCurrencies = [];
+    let lastConversionData = null;
+
+    // Inicialização
+    document.addEventListener("DOMContentLoaded", () => {
+        fetchCurrencies();
+    });
+
+    // Navegação de abas
+    function openTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+
+        if (tabId === 'tab-stock') loadStock();
+    }
+
+    // Exibir notificações (Toast)
+    function showToast(msg, type='success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => toast.className = 'toast', 3000);
+    }
+
+    // Carregar moedas da API
+    async function fetchCurrencies() {
+        try {
+            const res = await fetch('/api/currencies');
+            const data = await res.json();
+            currentCurrencies = data;
+            
+            // Popula selects
+            const selects = ['conv-from', 'conv-to', 'stock-currency-select'];
+            selects.forEach(id => {
+                const el = document.getElementById(id);
+                el.innerHTML = '';
+                data.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.code;
+                    opt.textContent = `${c.code} - ${c.name}`;
+                    el.appendChild(opt);
+                });
+            });
+
+            // Set default BRL to USD se existir
+            if (document.getElementById('conv-from').querySelector('option[value="BRL"]'))
+                document.getElementById('conv-from').value = 'BRL';
+            if (document.getElementById('conv-to').querySelector('option[value="USD"]'))
+                document.getElementById('conv-to').value = 'USD';
+
+            renderCurrenciesTable(data);
+        } catch (e) {
+            showToast('Erro ao carregar moedas.', 'error');
+        }
+    }
+
+    // Renderiza tabela de moedas
+    function renderCurrenciesTable(currencies) {
+        const tbody = document.querySelector('#table-currencies tbody');
+        tbody.innerHTML = '';
+        currencies.forEach(c => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><span class="badge">${c.code}</span></td>
+                <td>${c.name}</td>
+                <td>${c.symbol}</td>
+                <td>R$ ${c.brl_rate.toFixed(4)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Atualizar cotações Frankfurter
+    async function updateRatesFromAPI() {
+        const btn = document.getElementById('btn-update-api');
+        btn.disabled = true;
+        btn.innerHTML = 'Atualizando...';
+        try {
+            const res = await fetch('/api/currencies/update-rates', {method: 'POST'});
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            showToast(`Cotações atualizadas com sucesso! (${data.updated.length} moedas)`);
+            fetchCurrencies();
+        } catch (e) {
+            showToast('Erro ao atualizar via API.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `Atualizar Cotações (API)`;
+        }
+    }
+
+    // Conversão
+    async function handleConvert(e) {
+        e.preventDefault();
+        const amount = document.getElementById('conv-amount').value;
+        const from = document.getElementById('conv-from').value;
+        const to = document.getElementById('conv-to').value;
+        const use_stock = document.getElementById('conv-stock').checked;
+
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/convert', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ amount, from, to, use_stock })
+            });
+            const data = await res.json();
+            
+            if (!data.success) {
+                throw new Error(data.error);
+            }
+
+            // Sucesso na conversão
+            lastConversionData = data;
+            document.getElementById('conv-result').style.display = 'block';
+            document.getElementById('res-amount').textContent = `${data.to_symbol} ${data.converted_amount.toFixed(2)}`;
+            document.getElementById('res-items-count').textContent = `Total de itens físicos: ${data.total_items}`;
+            
+            const ul = document.getElementById('res-change-list');
+            ul.innerHTML = '';
+            data.change.forEach(item => {
+                ul.innerHTML += `
+                    <li class="change-item">
+                        <span>${item.denomination_formatted}</span>
+                        <span class="change-qty">x${item.quantity}</span>
+                    </li>
+                `;
+            });
+
+            const btnConfirm = document.getElementById('btn-confirm-stock');
+            if (use_stock) {
+                btnConfirm.style.display = 'block';
+            } else {
+                btnConfirm.style.display = 'none';
+            }
+
+        } catch (err) {
+            showToast(err.message, 'error');
+            document.getElementById('conv-result').style.display = 'none';
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    // Confirmar dedução do estoque
+    async function confirmStockDeduction() {
+        if (!lastConversionData) return;
+        try {
+            const res = await fetch('/api/convert/confirm', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    to: lastConversionData.to_code,
+                    change: lastConversionData.change
+                })
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.error);
+            showToast('Estoque atualizado (deduzido) com sucesso!');
+            document.getElementById('btn-confirm-stock').style.display = 'none';
+        } catch(e) {
+            showToast(e.message, 'error');
+        }
+    }
+
+    // Estoque
+    async function loadStock() {
+        const code = document.getElementById('stock-currency-select').value;
+        if (!code) return;
+
+        try {
+            const res = await fetch(`/api/stock/${code}`);
+            const data = await res.json();
+            if (!data.success) throw new Error(data.error);
+
+            document.getElementById('stock-container').style.display = 'block';
+            const tbody = document.querySelector('#table-stock tbody');
+            tbody.innerHTML = '';
+            
+            data.stock.forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.denomination_formatted}</td>
+                        <td>
+                            <input type="number" min="0" class="stock-input" data-denom="${item.denomination}" value="${item.quantity}">
+                        </td>
+                    </tr>
+                `;
+            });
+        } catch(e) {
+            showToast('Erro ao carregar estoque.', 'error');
+            document.getElementById('stock-container').style.display = 'none';
+        }
+    }
+
+    async function saveStock() {
+        const code = document.getElementById('stock-currency-select').value;
+        const inputs = document.querySelectorAll('.stock-input');
+        const stockData = {};
+        
+        inputs.forEach(inp => {
+            stockData[inp.dataset.denom] = parseInt(inp.value) || 0;
+        });
+
+        try {
+            const res = await fetch(`/api/stock/${code}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ stock: stockData })
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.error);
+            showToast('Estoque salvo com sucesso!');
+        } catch(e) {
+            showToast(e.message, 'error');
+        }
+    }
+</script>
+</body>
+</html>
