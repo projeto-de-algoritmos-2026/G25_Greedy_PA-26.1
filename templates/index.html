@@ -354,10 +354,7 @@
 <div class="container">
     <header>
         <h1>Conversor de Moedas</h1>
-        <button class="btn btn-outline" id="btn-update-api" onclick="updateRatesFromAPI()">
-            <svg style="width:16px;height:16px;margin-right:8px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
-            Atualizar Cotações (API)
-        </button>
+
     </header>
 
     <div class="tabs">
@@ -421,6 +418,7 @@
                             <th>Nome</th>
                             <th>Símbolo</th>
                             <th>Cotação em BRL</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -530,27 +528,35 @@
                 <td>${c.name}</td>
                 <td>${c.symbol}</td>
                 <td>R$ ${c.brl_rate.toFixed(4)}</td>
+                <td>
+                    <button class="btn btn-outline" style="padding:0.25rem 0.75rem; font-size:0.8rem;" onclick="editRate('${c.code}', ${c.brl_rate})">✏️ Editar</button>
+                </td>
             `;
             tbody.appendChild(tr);
         });
     }
 
-    // Atualizar cotações Frankfurter
-    async function updateRatesFromAPI() {
-        const btn = document.getElementById('btn-update-api');
-        btn.disabled = true;
-        btn.innerHTML = 'Atualizando...';
+    async function editRate(code, currentRate) {
+        const newRate = prompt(`Digite a nova cotação (em BRL) para a moeda ${code}:`, currentRate);
+        if (newRate === null) return;
+        const parsedRate = parseFloat(newRate.replace(',', '.'));
+        if (isNaN(parsedRate) || parsedRate <= 0) {
+            showToast('Cotação inválida!', 'error');
+            return;
+        }
+
         try {
-            const res = await fetch('/api/currencies/update-rates', {method: 'POST'});
+            const res = await fetch(`/api/currencies/${code}/rate`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ brl_rate: parsedRate })
+            });
             const data = await res.json();
-            if (data.error) throw new Error(data.error);
-            showToast(`Cotações atualizadas com sucesso! (${data.updated.length} moedas)`);
+            if (!data.success) throw new Error(data.error);
+            showToast('Cotação atualizada com sucesso!');
             fetchCurrencies();
-        } catch (e) {
-            showToast('Erro ao atualizar via API.', 'error');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = `Atualizar Cotações (API)`;
+        } catch(e) {
+            showToast(e.message, 'error');
         }
     }
 
