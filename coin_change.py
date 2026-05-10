@@ -70,8 +70,6 @@ DEFAULT_CURRENCIES: list[dict] = [
 class CurrencyManager:
     """Gerencia moedas cadastradas, carregando e salvando em currencies.json."""
 
-    FRANKFURTER_API = "https://api.frankfurter.dev/v2/rates"
-
     def __init__(self, filepath: str = "currencies.json"):
         self._filepath = filepath
         self._currencies: dict[str, Currency] = {}

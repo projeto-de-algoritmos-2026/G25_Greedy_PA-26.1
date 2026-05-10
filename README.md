@@ -16,7 +16,7 @@ Este projeto implementa um **Conversor de Moedas Dinâmico** com cálculo de tro
 
 A aplicação evoluiu de um script de terminal para um sistema completo com:
 - **Interface Visual Moderna:** Servidor Flask com página HTML e design "Glassmorphism".
-- **Gerenciamento Dinâmico:** Cotações atualizáveis através de uma API gratuita externa (Frankfurter) e dados persistidos em `currencies.json`.
+- **Gerenciamento Dinâmico:** Cotações atualizáveis manualmente e dados persistidos em `currencies.json`.
 - **Controle de Estoque Físico:** Opção de limitar a quantidade de moedas entregues na conversão de acordo com as notas armazenadas fisicamente no "cofre" (persistido em `stock.json`).
 
 ## Pré-requisitos

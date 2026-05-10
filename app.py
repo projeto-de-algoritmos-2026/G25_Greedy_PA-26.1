@@ -72,13 +72,6 @@ def api_update_rate(code):
         return jsonify({"success": False, "error": str(exc)}), 400
 
 
-@app.route("/api/currencies/update-rates", methods=["POST"])
-def api_update_rates_from_api():
-    """Atualiza cotações via Frankfurter API."""
-    results = currency_manager.update_rates_from_api()
-    return jsonify(results)
-
-
 @app.route("/api/currencies/<code>", methods=["DELETE"])
 def api_delete_currency(code):
     """Remove uma moeda."""
