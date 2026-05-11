@@ -17,6 +17,8 @@ from coin_change import (
     greedy_change,
     greedy_change_with_stock,
     format_money,
+    denomination_type,
+    format_denomination_type,
     from_cents,
 )
 
@@ -129,12 +131,17 @@ def api_convert():
 
         # Formatar resultado
         total_items = sum(qty for _, qty in change)
+        total_bills = sum(qty for denomination, qty in change if denomination_type(denomination, target) == "cédula")
+        total_coins = total_items - total_bills
         change_formatted = []
         for denomination, qty in change:
+            item_type = denomination_type(denomination, target)
             change_formatted.append({
                 "denomination": denomination,
                 "denomination_formatted": format_money(denomination, target),
                 "quantity": qty,
+                "type": item_type,
+                "type_label": format_denomination_type(denomination, qty, target),
             })
 
         result = {
@@ -146,6 +153,8 @@ def api_convert():
             "original_amount": amount,
             "converted_amount": converted,
             "total_items": total_items,
+            "total_bills": total_bills,
+            "total_coins": total_coins,
             "change": change_formatted,
             "used_stock": use_stock,
         }
@@ -187,6 +196,7 @@ def api_get_stock(code):
         stock_list.append({
             "denomination": denom,
             "denomination_formatted": format_money(denom, currency),
+            "type": denomination_type(denom, currency),
             "quantity": stock.get(str(denom), 0),
         })
 

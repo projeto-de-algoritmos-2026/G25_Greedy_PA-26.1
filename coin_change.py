@@ -231,6 +231,26 @@ def format_money(cents: int, currency: Currency) -> str:
     return f"{currency.symbol} {amount:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
+def denomination_type(denomination: int, currency: Currency) -> str:
+    """Classifica uma denominação física como cédula ou moeda."""
+    max_coin_by_currency = {
+        "BRL": 100,  # moedas de até R$ 1,00
+        "USD": 50,   # moedas comuns até US$ 0,50
+        "EUR": 200,  # moedas de até € 2,00
+        "GBP": 200,  # moedas de até £ 2,00
+    }
+    max_coin = max_coin_by_currency.get(currency.code.upper(), 99)
+    return "moeda" if denomination <= max_coin else "cédula"
+
+
+def format_denomination_type(denomination: int, quantity: int, currency: Currency) -> str:
+    """Retorna o tipo da denominação concordando com a quantidade."""
+    kind = denomination_type(denomination, currency)
+    if quantity == 1:
+        return kind
+    return "moedas" if kind == "moeda" else "cédulas"
+
+
 #  algoritmo da moeda
 
 def greedy_change(amount_cents: int, denominations: list[int]) -> list[tuple[int, int]]:

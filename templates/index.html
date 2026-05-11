@@ -235,6 +235,18 @@
             align-items: center;
         }
 
+        .change-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .change-type {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: capitalize;
+        }
+
         .change-qty {
             font-size: 1.25rem;
             font-weight: 700;
@@ -441,7 +453,8 @@
                     <thead>
                         <tr>
                             <th>Denominação</th>
-                            <th>Quantidade Físca</th>
+                            <th>Tipo</th>
+                            <th>Quantidade Física</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -587,14 +600,17 @@
             lastConversionData = data;
             document.getElementById('conv-result').style.display = 'block';
             document.getElementById('res-amount').textContent = `${data.to_symbol} ${data.converted_amount.toFixed(2)}`;
-            document.getElementById('res-items-count').textContent = `Total de itens físicos: ${data.total_items}`;
+            document.getElementById('res-items-count').textContent = `Total de itens físicos: ${data.total_items} (${data.total_bills} cédulas, ${data.total_coins} moedas)`;
             
             const ul = document.getElementById('res-change-list');
             ul.innerHTML = '';
             data.change.forEach(item => {
                 ul.innerHTML += `
                     <li class="change-item">
-                        <span>${item.denomination_formatted}</span>
+                        <span class="change-info">
+                            <span>${item.denomination_formatted}</span>
+                            <span class="change-type">${item.type_label}</span>
+                        </span>
                         <span class="change-qty">x${item.quantity}</span>
                     </li>
                 `;
@@ -654,6 +670,7 @@
                 tbody.innerHTML += `
                     <tr>
                         <td>${item.denomination_formatted}</td>
+                        <td><span class="badge">${item.type}</span></td>
                         <td>
                             <input type="number" min="0" class="stock-input" data-denom="${item.denomination}" value="${item.quantity}">
                         </td>

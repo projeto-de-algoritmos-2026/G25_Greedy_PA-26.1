@@ -1,6 +1,14 @@
-import sys
 import subprocess
-from coin_change import CurrencyManager, to_cents, greedy_change, convert_currency, format_money
+import sys
+
+from coin_change import (
+    CurrencyManager,
+    convert_currency,
+    format_denomination_type,
+    format_money,
+    greedy_change,
+    to_cents,
+)
 
 def fallback_terminal() -> None:
     print("Conversor de moeda com otimizacao de troco (Fallback Terminal)")
@@ -33,7 +41,8 @@ def fallback_terminal() -> None:
         
         print("\nCombinacao gerada pelo algoritmo greedy:")
         for denomination, quantity in change:
-            print(f"{quantity} x {format_money(denomination, target)}")
+            denomination_kind = format_denomination_type(denomination, quantity, target)
+            print(f"{quantity} x {format_money(denomination, target)} ({denomination_kind})")
 
     except ValueError as error:
         print(f"\nErro: {error}")
@@ -51,4 +60,3 @@ if __name__ == "__main__":
         fallback_terminal()
     else:
         main()
-
