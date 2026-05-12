@@ -52,3 +52,19 @@ Exemplo: R$ 85 em notas de [50, 20, 10, 5, 2, 1]
 4. Uma nota de 5 (sobram 0)
 
 Com a funcionalidade "Limitar pelo Estoque" ativada, ele verifica o cofre (em `stock.json`) e se não houverem notas de 50, ele é forçado a usar notas menores de forma otimizada, desde que disponíveis.
+
+## Screenshots (demonstração) 
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><img src="imgs/tela-inicial.png" alt="tela-inicial" width="500"/><br/>Tela inicial</td>
+      <td align="center"><img src="imgs/conversor-gerador.png" alt="Conversor de Gerador" width="350"/><br/>Conversor e Gerador</td>
+      <td align="center"><img src="imgs/estoque.png" alt="Estoque" width="350"/><br/>Estoque</td>
+      <td align="center"><img src="imgs/moedas.png" alt="moedas" width="350"/><br/>Moedas</td>
+    </tr>
+  </table>
+</div>
+
+## Vídeo (demonstração)
+
+[Apresentação G25  - Algoritmos Ambiciosos PA 2026 1](https://youtu.be/)
