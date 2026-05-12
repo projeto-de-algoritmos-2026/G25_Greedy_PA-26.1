@@ -67,4 +67,4 @@ Com a funcionalidade "Limitar pelo Estoque" ativada, ele verifica o cofre (em `s
 
 ## Vídeo (demonstração)
 
-[Apresentação G25  - Algoritmos Ambiciosos PA 2026 1](https://youtu.be/)
+[Apresentação G25  - Algoritmos Ambiciosos PA 2026 1](https://youtu.be/qj49vXaZLwU)
